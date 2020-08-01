@@ -15,23 +15,22 @@
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(9600);
   Serial.println("Logging Begin");
   I2CeepromInit();
-  Serial.begin(9600);
   Wire.beginTransmission(CHIP_1);
   write16bit(DATA_PT_COUNT_ADDRESS);
   write16bit(0);
   Wire.endTransmission();
-
-  Serial.println("Logging Begin");
 }
 
 void loop() {
+  //Serial.println("Hello World");
   // put your main code here, to run repeatedly:
-for(uint16_t i = 1; i!=0; i = i<<1){
-    //writeEEPROMData(i);
-    Serial.println(i);
-    delay(3000);
+  for(uint16_t i = 1; i!=0; i = i<<1){
+    writeEEPROMData(0x6969);
+    //Serial.println(i);
+    delay(1000);
   }
 }
 
@@ -61,7 +60,7 @@ void I2CeepromInit(){
 
 int writeEEPROMData(uint16_t reading){
   
-  uint16_t address =0;
+  uint16_t address = 0;
   Wire.beginTransmission(CHIP_1);
   write16bit(STACK_PTR_ADDRESS);
   Wire.endTransmission();
@@ -77,6 +76,7 @@ int writeEEPROMData(uint16_t reading){
   
   Wire.requestFrom(CHIP_1,1);
   address |= Wire.read();
+  Serial.println(address);
   
   int i2cAddress;
   if(address < 0x1000){i2cAddress = CHIP_1;}
