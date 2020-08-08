@@ -12,7 +12,7 @@ void setup() {
   char output[15];
   Wire.begin();
   Serial.begin(9600);
-  for(uint16_t address = 0; address<0x100; address++){
+  for(uint16_t address = 0; address<0xFFFF; address++){
     int i2cAddress;
     if(address < 0x1000){i2cAddress = CHIP_1;}
     else if(address < 0x2000){i2cAddress = CHIP_2;}

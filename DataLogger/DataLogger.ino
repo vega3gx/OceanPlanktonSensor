@@ -12,90 +12,78 @@
 
 #define LOW_MASK 0x00FF
 #define HIGH_MASK 0xFF00
+#define LOCAL_CHIP_MASK 0x0FFF
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   Serial.println("Logging Begin");
-  I2CeepromInit();
-  Wire.beginTransmission(CHIP_1);
-  write16bit(DATA_PT_COUNT_ADDRESS);
-  write16bit(0);
-  Wire.endTransmission();
+  Wire.begin();
 }
 
 void loop() {
-  //Serial.println("Hello World");
   // put your main code here, to run repeatedly:
-  for(uint16_t i = 1; i!=0; i = i<<1){
-    writeEEPROMData(0x6969);
-    //Serial.println(i);
-    delay(1000);
-  }
-}
+    writeEEPROMData(0x0000);
 
-void I2CeepromInit(){
-  Wire.begin();
-  int error;
-  do
-  { //reset initial write position
     Wire.beginTransmission(CHIP_1);
-    write16bit(STACK_PTR_ADDRESS);
-    write16bit(DATA_START);
-    error = Wire.endTransmission();
-    delay(5);
-  }while(error);
-
-
-  //move this to erase program
-//  do
-//  {
-//    Wire.beginTransmission(chipAddress);
-//    write16bit(DATA_PT_COUNT_ADDRESS);
-//    write16bit(0x0000);
-//    error = Wire.endTransmission();
-//    delay(5);
-//  }while(error);
+    write16bit(STACK_PTR_ADDRESS+1);
+    Wire.endTransmission();
+    
+    Wire.requestFrom(CHIP_1,1);
+    int add = Wire.read();
+    Serial.println(add);
+    delay(2000);
 }
+
 
 int writeEEPROMData(uint16_t reading){
-  
-  uint16_t address = 0;
+
+  //Set EEPROM ptr to stack pointer address location
+  uint16_t address = 0; //address of next free memory location
   Wire.beginTransmission(CHIP_1);
   write16bit(STACK_PTR_ADDRESS);
   Wire.endTransmission();
   delay(5);
-  
+
+  //get address high byte
   Wire.requestFrom(CHIP_1,1);
   address |= Wire.read()<<8;
-  
+
+  //set stack pointer to location of low byte address
   Wire.beginTransmission(CHIP_1);
   write16bit(STACK_PTR_ADDRESS+1);
   Wire.endTransmission();
   delay(5);
-  
+
+  //get address low byte
   Wire.requestFrom(CHIP_1,1);
   address |= Wire.read();
-  Serial.println(address);
-  
+  //Serial.print(address);
+
+  // find chip
   int i2cAddress;
   if(address < 0x1000){i2cAddress = CHIP_1;}
   else if(address < 0x2000){i2cAddress = CHIP_2;}
   else if(address < 0x3000){i2cAddress = CHIP_3;}
   else{i2cAddress = CHIP_4;}
-  
-  write16bit(address);
+
+  //write recorded data
   Wire.beginTransmission(i2cAddress);
+  write16bit(address & LOCAL_CHIP_MASK);
   write16bit(reading);
   Wire.endTransmission();
   delay(5);
-  
+  //Serial.print( reading);
+  //Serial.println(" ");
+
+  //increment next free address pointer by 2
   Wire.beginTransmission(CHIP_1);
   write16bit(STACK_PTR_ADDRESS);
   write16bit(address+2);
   Wire.endTransmission();
   delay(5);
-  
+
+  //get number of readings
   uint16_t count = 0;
   Wire.beginTransmission(CHIP_1);
   write16bit(DATA_PT_COUNT_ADDRESS);

@@ -8,6 +8,10 @@
 #define LOW_MASK 0x00FF
 #define HIGH_MASK 0xFF00
 
+#define STACK_PTR_ADDRESS 0x0000
+#define DATA_PT_COUNT_ADDRESS 0x0002
+#define DATA_START 0x0004
+
 void setup() {
   char output[15];
   Wire.begin();
@@ -20,45 +24,51 @@ void setup() {
     else if(address < 0x3000){i2cAddress = CHIP_3;}
     else{i2cAddress = CHIP_4;}
     Wire.beginTransmission(i2cAddress);
-    Serial.println("Address");
+    //Serial.println("Address");
     write16bit(address);
-    Serial.println("data");
-    write16bit(0x8138);
+    //Serial.println("data");
+    write16bit(0xFFFF);
     Wire.endTransmission();
+
+    Wire.beginTransmission(i2cAddress);
+    write16bit(address);
+    Serial.println(address);
+    Wire.endTransmission();
+
+    Wire.requestFrom(i2cAddress,2);
+    int out = Wire.read();
+    Serial.println(out);
+    out = Wire.read();
+    Serial.println(out);
     delay(5);
   }
-//    uint8_t reading;
-//    do
-//    {
-//      Wire.beginTransmission(0x50);
-//      Wire.write((0x000&0xF00)>>8);
-//      Wire.write(0x000&0x0FF);
-//      Wire.write(0x00);
-//      error = Wire.endTransmission();
-//
-//      Wire.beginTransmission(0x50);
-//      Wire.write(0x00);
-//      Wire.write(0x00);
-//      Wire.endTransmission();
-//
-//      delay(1);
-//
-//      Wire.requestFrom(0x50,1);
-//      reading = Wire.read();
-//    }while(error || reading);
-//    Wire.requestFrom(0x50,1);
-//    int reading = Wire.read();
-//    sprintf(output,"%03x  %02x",address,reading);
-//    Serial.println(output);
+
+//  reset stack pointer
+//  Wire.beginTransmission(CHIP_1);
+//  write16bit(STACK_PTR_ADDRESS);
+//  write16bit(DATA_START);
+//  Wire.endTransmission();
+//  delay(5);
+
+  //reset number of data points
+//  Wire.beginTransmission(CHIP_1);
+//  write16bit(DATA_PT_COUNT_ADDRESS);
+//  write16bit(0x0000);
+//  Wire.endTransmission();
+  
+
   Serial.println("done");
+
+
+  
 }
 
 void write16bit(uint16_t value) //bigEndian
       {
           Wire.write((value & HIGH_MASK)>>8);
-          Serial.println((value & HIGH_MASK)>>8);
+          //Serial.println((value & HIGH_MASK)>>8);
           Wire.write((value & LOW_MASK));
-          Serial.println((value & LOW_MASK));
+          //Serial.println((value & LOW_MASK));
       }
 void loop() {
   // put your main code here, to run repeatedly:
