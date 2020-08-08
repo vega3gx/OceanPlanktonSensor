@@ -12,8 +12,9 @@ void setup() {
 }
 
 void loop() {
+  char output[15];
   // set the brightness of pin 9:
-  analogWrite(led, brightness);
+  analogWrite(led, 143);
 
   // change the brightness for next time through the loop:
   brightness = brightness + fadeAmount;
@@ -23,6 +24,7 @@ void loop() {
     fadeAmount = -fadeAmount;
   }
   val = analogRead(analogPin);  // read the input pin
-  Serial.println(val);          // debug value
+  sprintf(output, "%d,%d", brightness,val);
+  Serial.println(output);          // debug value
   delay(30);
 }
