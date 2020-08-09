@@ -1,7 +1,9 @@
-#define DAC_SIZE 8
+#define DAC_SIZE 10
+#define LASER_MIN 240
+#define LASER_MAX 512
 
-int DAC[8] = {12,11,10,9,8,7,4,5};
-int brightness = 60;    // how bright the LED is
+int DAC[DAC_SIZE] = {12,11,10,9,8,7,4,5,3,2};
+int brightness = LASER_MIN;    // how bright the LED is
 int fadeAmount = 1;    // how many points to fade the LED by
 
 
@@ -10,9 +12,10 @@ void setup() {
   for (int thisPin = 0; thisPin < DAC_SIZE; thisPin++) {
     pinMode(DAC[thisPin], OUTPUT);
   }
+  //DACSetValue(1023);
 }
 
-uint8_t DAClevel =0;
+uint16_t DAClevel =0;
 
 void loop() {
   // put your main code here, to run repeatedly:
@@ -22,16 +25,17 @@ void loop() {
   brightness = brightness + fadeAmount;
 
   // reverse the direction of the fading at the ends of the fade:
-  if (brightness <= 60 || brightness >= 128) {
+  if (brightness <= LASER_MIN || brightness >= LASER_MAX) {
     fadeAmount = -fadeAmount;
   }
   // wait for 30 milliseconds to see the dimming effect
   delay(100);
 }
 
-void DACSetValue(uint8_t value){
-  uint8_t mask = 0x01;
-  for(int i=0;i<8;i++){
+void DACSetValue(uint16_t value){
+  if(value>1023){value=1023;}
+  uint16_t mask = 0x001;
+  for(int i=0;i<DAC_SIZE;i++){
     digitalWrite(DAC[i],value & mask);
     mask = mask<<1;
   }
