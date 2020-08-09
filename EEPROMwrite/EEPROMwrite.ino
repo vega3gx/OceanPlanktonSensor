@@ -25,7 +25,7 @@ void setup() {
     else{i2cAddress = CHIP_4;}
     Wire.beginTransmission(i2cAddress);
     //Serial.println("Address");
-    write16bit(address);
+    Wire.write(address);
     //Serial.println("data");
     write16bit(0xFFFF);
     Wire.endTransmission();
@@ -44,17 +44,17 @@ void setup() {
   }
 
 //  reset stack pointer
-//  Wire.beginTransmission(CHIP_1);
-//  write16bit(STACK_PTR_ADDRESS);
-//  write16bit(DATA_START);
-//  Wire.endTransmission();
-//  delay(5);
+  Wire.beginTransmission(CHIP_1);
+  write16bit(STACK_PTR_ADDRESS);
+  write16bit(DATA_START);
+  Wire.endTransmission();
+  delay(5);
 
   //reset number of data points
-//  Wire.beginTransmission(CHIP_1);
-//  write16bit(DATA_PT_COUNT_ADDRESS);
-//  write16bit(0x0000);
-//  Wire.endTransmission();
+  Wire.beginTransmission(CHIP_1);
+  write16bit(DATA_PT_COUNT_ADDRESS);
+  write16bit(0x0000);
+  Wire.endTransmission();
   
 
   Serial.println("done");
