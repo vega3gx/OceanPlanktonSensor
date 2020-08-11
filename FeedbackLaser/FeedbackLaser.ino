@@ -26,8 +26,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   DACSetValue(brightness);
-  if(analogRead(analogPin)<(ambient+TARGET) && (brightness<LASER_MAX)){brightness++;}
-  else if (analogRead(analogPin)>(ambient+TARGET) &&(brightness>LASER_MIN)){brightness--;}
+  if(analogRead(analogPin)<(ambient+TARGET)){brightness++;}
+  else if (analogRead(analogPin)>(ambient+TARGET) ){brightness--;}
   Serial.println(brightness);
   //
   delay(1);
