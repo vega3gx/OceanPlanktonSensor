@@ -26,10 +26,20 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   DACSetValue(brightness);
+<<<<<<< HEAD
   if(analogRead(analogPin)<(ambient+TARGET)){brightness++;}
   else if (analogRead(analogPin)>(ambient+TARGET) ){brightness--;}
   Serial.println(brightness);
   //
+=======
+  int precept = analogRead(analogPin)-ambient;
+  if(precept<TARGET){brightness++;}
+  else if (precept>TARGET){brightness--;}
+  char out[15];
+  sprintf(out, "Laser brightness = %d Sensor Reads = %d", brightness,precept);
+  Serial.println(out);
+  Serial.println("**************************");
+>>>>>>> 88b5916349712d4663c4cc4820eb2d28500d3b9d
   delay(1);
 }
 
