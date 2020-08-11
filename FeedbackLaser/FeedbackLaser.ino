@@ -30,8 +30,9 @@ void loop() {
   if(precept<TARGET){brightness++;}
   else if (precept>TARGET){brightness--;}
   char out[15];
-  sprintf(out,"%d %d", brightness,precept);
+  sprintf(out, "Laser brightness = %d Sensor Reads = %d", brightness,precept);
   Serial.println(out);
+  Serial.println("**************************");
   delay(1);
 }
 
