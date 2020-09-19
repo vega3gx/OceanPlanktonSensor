@@ -16,33 +16,7 @@ void setup() {
   char output[15];
   Wire.begin();
   Serial.begin(9600);
-  Serial.println("Begin Erasing");
-  for(uint16_t address = 0; address<0x100; address+=2){
-    int i2cAddress;
-    if(address < 0x1000){i2cAddress = CHIP_1;}
-    else if(address < 0x2000){i2cAddress = CHIP_2;}
-    else if(address < 0x3000){i2cAddress = CHIP_3;}
-    else{i2cAddress = CHIP_4;}
-    Wire.beginTransmission(i2cAddress);
-    //Serial.println("Address");
-    Wire.write(address);
-    //Serial.println("data");
-    write16bit(0xFFFF);
-    Wire.endTransmission();
-
-    Wire.beginTransmission(i2cAddress);
-    write16bit(address);
-    Serial.println(address);
-    Wire.endTransmission();
-
-    Wire.requestFrom(i2cAddress,2);
-    int out = Wire.read();
-    Serial.println(out);
-    out = Wire.read();
-    Serial.println(out);
-    delay(5);
-  }
-
+    
 //  reset stack pointer
   Wire.beginTransmission(CHIP_1);
   write16bit(STACK_PTR_ADDRESS);
@@ -58,9 +32,6 @@ void setup() {
   
 
   Serial.println("done");
-
-
-  
 }
 
 void write16bit(uint16_t value) //bigEndian
