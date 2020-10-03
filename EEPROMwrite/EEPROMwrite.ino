@@ -29,10 +29,34 @@ void setup() {
   write16bit(DATA_PT_COUNT_ADDRESS);
   write16bit(0x0000);
   Wire.endTransmission();
-  
 
-  Serial.println("done");
+    Wire.beginTransmission(CHIP_1);
+    write16bit(STACK_PTR_ADDRESS);
+    Wire.endTransmission();
+    
+    uint16_t out = read16bit(STACK_PTR_ADDRESS);
+    Serial.println(out);
 }
+
+uint16_t read16bit(uint16_t address) //bigEndian
+  {
+  int i2cAddress;
+  if(address < 0x1000){i2cAddress = CHIP_1;}
+  else if(address < 0x2000){i2cAddress = CHIP_2;}
+  else if(address < 0x3000){i2cAddress = CHIP_3;}
+  else{i2cAddress = CHIP_4;}
+  Wire.beginTransmission(i2cAddress);
+  write16bit(address % 0x1000);
+  Wire.endTransmission();
+  
+  Wire.requestFrom(i2cAddress,2);
+  uint8_t msb = Wire.read();
+  uint8_t lsb = Wire.read();
+  uint16_t result = msb;
+  result = result << 8;
+  result |= lsb;
+  return(result);
+  }
 
 void write16bit(uint16_t value) //bigEndian
       {
