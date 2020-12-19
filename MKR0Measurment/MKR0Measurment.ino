@@ -37,6 +37,8 @@ const byte hours = 18;
 const byte day = 6;
 const byte month = 12;
 const byte year = 20;
+
+
 int minute = 31;
 char output[15];
 
