@@ -1,12 +1,7 @@
-#define month_size 12
+#define MONTH_SIZE 12
 #define HOURTIME 60
 #define DAY_HOURS 24
-
-int newMinutes;
-int newHours;
-int newDay;
-int newMonth;
-int hoursInOffset;
+#define OFFSET 1
 
 // January 1, Feburary 2, March 3, April 4, May 5, June 6, July 7
 // August 8, September 9, October 10, Novemeber 11, Decemebe 12
@@ -19,12 +14,21 @@ struct DateTime
   int hours;
   int minutes;
   // Always in minutes
-  int offset;
 };
 
+char buff[15];
+
+struct DateTime current;
 
 void setup() {
   // put your setup code here, to run once:
+  
+  current.month = 12;
+  current.day = 19;
+  current.hours = 4;
+  current.minutes = 30;
+
+  Serial.begin(9600);
 
 
 }
@@ -32,44 +36,79 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   // If the offset plus minutes is bigger than an hour, begin the program
-  if (DateTime.offset + DateTime.minutes) >= HOURTIME {
+  //Serial.println(current.minutes + " Hello");
+  delay(1000);
+  struct DateTime next = GetNewAlarm(current);
+  current = next;
+  sprintf(buff,"%d:%d",current.hours,current.minutes);
+  Serial.println(buff);
+
+}
+
+struct DateTime GetNewAlarm(struct DateTime curr) {
+
+  int newMinutes;
+  int newHours;
+  int newDay;
+  int newMonth;
+  int hoursInOffset;
+
+  if (curr.minutes >= HOURTIME) {
     // If the
-    newMinutes == (DateTime.minutes + DateTime.offset) % HOURTIME;
-    hoursInOffset == (DateTime.minutes + DateTime.offset) / HOURTIME;
-    newHours == hoursInOffset + DateTime.hours;
-    if hoursInOffset >= 24 {
-    if DateTime.month == 1, 3, 5, 7, 8, 10, 12 {
-      if DateTime.day != 31 {
-        newDay = DateTime.day + (newhours / DAY_HOURS);
-          newMonth = DateTime.month;
+    newMinutes == (curr.minutes + OFFSET) % HOURTIME;
+    hoursInOffset == (curr.minutes + OFFSET) / HOURTIME;
+    newHours == hoursInOffset + curr.hours;
+    if (hoursInOffset >= 24) {
+      switch (curr.month){
+        case 1:
+        case 3:
+        case 5:
+        case 7:
+        case 8:
+        case 10:
+        case 12:
+        if (curr.day != 31) {
+          newDay = curr.day + (newHours / DAY_HOURS);
+          newMonth = curr.month;
         } else {
-          newDay = 1 + (newhours / DAY_HOURS);
-          newMonth = DateTime.month + 1;
+          newDay = 1 + (newHours / DAY_HOURS);
+          newMonth = curr.month + 1;
         }
-      } else if DateTime.month == 4, 6, 9, 11 {
-      if DateTime.day != 30 {
-        newDay = DateTime.day + (newhours / DAY_HOURS);
-          newMonth = DateTime.month;
+        break;
+        case 4:
+        case 6:
+        case 9:
+        case 11:
+        if (curr.day != 30) {
+          newDay = curr.day + (newHours / DAY_HOURS);
+          newMonth = curr.month;
         } else {
-          newDay = 1 + (newhours / DAY_HOURS);
-          newMonth = DateTime.month + 1;
+          newDay = 1 + (newHours / DAY_HOURS);
+          newMonth = curr.month + 1;
         }
-      } else {
-        if DateTime.day != 29 {
-        newDay = DateTime.day + (newhours / DAY_HOURS);
-          newMonth = DateTime.month;
+        break;
+        case 2:
+        if (curr.day != 29) {
+          newDay = curr.day + (newHours / DAY_HOURS);
+          newMonth = curr.month;
         } else {
-          newDay = 1 + (newhours / DAY_HOURS);
-          newMonth = DateTime.month + 1;
+          newDay = 1 + (newHours / DAY_HOURS);
+          newMonth = curr.month + 1;
         }
+        default:
+        break;
       }
     }
   } else {
-    newMinutes = DateTime.minutes + DateTime.offset;
-    newHours = DateTime.hours;
-    newDay = DateTime.day;
-    newMonth = DateTime.month;
+    newMinutes = curr.minutes + OFFSET;
+    newHours = curr.hours;
+    newDay = curr.day;
+    newMonth = curr.month;
   }
-
-
+  struct DateTime newtime;
+  newtime.minutes=newMinutes;
+  newtime.hours=newHours;
+  newtime.day=newDay;
+  newtime.month=newMonth;
+  return(newtime);
 }

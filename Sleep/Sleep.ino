@@ -52,7 +52,7 @@ const byte year = 15;
 
 byte minute =0;
 
-volitile int flag = 0;
+int strength =128;
 
 
 void setup()
@@ -60,9 +60,14 @@ void setup()
 
   Serial.begin(9600);
   
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(7, OUTPUT);
+  pinMode(8, OUTPUT);
+  pinMode(6, OUTPUT);
+  pinMode(A0, OUTPUT);
 
-  digitalWrite(LED_BUILTIN, LOW);
+  digitalWrite(7, LOW);
+  digitalWrite(8, LOW);
+  digitalWrite(6, LOW);
 
   rtc.begin();
 
@@ -76,31 +81,23 @@ void setup()
 
   rtc.attachInterrupt(alarmMatch);
 
-  //rtc.standbyMode();
+  rtc.standbyMode();
 }
 
 void loop()
 {
-
   //rtc.standbyMode();    // Sleep until next alarm match
 }
 
 void alarmMatch()
 {
 
-  digitalWrite(LED_BUILTIN, HIGH);
-
-  delay(1000);
-
-  digitalWrite(LED_BUILTIN, LOW);
-
-  minute++;
+  digitalWrite(8, HIGH);
+  digitalWrite(7, HIGH);
+  digitalWrite(6, HIGH);
+  analogWrite(A0, 255);
   
-  rtc.setAlarmTime(17, minute, 0);
-
-  rtc.enableAlarm(rtc.MATCH_HHMMSS);
-
-  rtc.attachInterrupt(alarmMatch);
+  //rtc.setAlarmTime(17, minute, 0);
 
   //rtc.standbyMode();
 }
