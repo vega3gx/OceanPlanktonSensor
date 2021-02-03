@@ -22,11 +22,11 @@ DateTime current;
 
 void setup() {
   // put your setup code here, to run once:
-  
-  current.month = 12;
-  current.day = 19;
-  current.hours = 22;
-  current.minutes = 30;
+
+  current.month = 2;
+  current.day = 28;
+  current.hours = 23;
+  current.minutes = 45;
 
   Serial.begin(9600);
 
@@ -40,7 +40,7 @@ void loop() {
   delay(1000);
   DateTime next = GetNewAlarm(current);
   current = next;
-  sprintf(buff,"%d:%d %d %d",current.hours,current.minutes,current.day,current.month);
+  sprintf(buff, "%d:%d %d %d", current.hours, current.minutes, current.day, current.month);
   Serial.println(buff);
 
 }
@@ -54,51 +54,58 @@ DateTime GetNewAlarm(struct DateTime curr) {
   int newDay;
   int newMonth;
   int hoursInOffset;
+  int daysInOffset;
 
-  if (curr.minutes <= HOURTIME) {
-    // If the
-    newMinutes = (curr.minutes + OFFSET) % HOURTIME;
-    hoursInOffset = (curr.minutes + OFFSET) / HOURTIME;
-    newHours = hoursInOffset + curr.hours;
-    if (newHours <= 24) {
-      newHours %= 24;
-      switch (curr.month){
-        case 1:
-        case 3:
-        case 5:
-        case 7:
-        case 8:
-        case 10:
-        case 12:
-        newDay = curr.day + (newHours / DAY_HOURS);
-        newMonth = curr.month+(newDay/31);
-        newDay %= 31;
-        break;
-        case 4:
-        case 6:
-        case 9:
-        case 11:
-        newDay = curr.day + (newHours / DAY_HOURS);
-        newMonth = curr.month+(newDay/30);
-        newDay %= 30;
-        break;
-        case 2:
-        newDay = curr.day + (newHours / DAY_HOURS);
-        newMonth = curr.month+(newDay/28);
-        newDay %= 28;
-        default:
-        break;
+  // If the
+  newMinutes = (curr.minutes + OFFSET) % HOURTIME;
+  hoursInOffset = (curr.minutes + OFFSET) / HOURTIME;
+  newHours = hoursInOffset + curr.hours;
+  daysInOffset = (curr.hours + hoursInOffset) / 24;
+  newHours %= 24;
+  newDay = curr.day + daysInOffset;
+
+  switch (curr.month) {
+    case 12:
+    case 1:
+    case 3:
+    case 5:
+    case 7:
+    case 8:
+    case 10:
+      if (newDay == 32) {
+        newMonth = curr.month + 1;
+        newDay = 1;
+        if(newMonth==13){newMonth=1;}
+      }else{
+        newMonth=curr.month;
       }
-    }
-  }// else {
-//    newMinutes = curr.minutes + OFFSET;
-//    newHours = curr.hours;
-//    newDay = curr.day;
-//    newMonth = curr.month;
+      break;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+      if (newDay == 31) {
+        newMonth = curr.month + 1;
+        newDay = 1;
+      }else{
+        newMonth=curr.month;
+      }
+      break;
+    case 2:
+      if (newDay == 29) {
+        newMonth = curr.month + 1;
+        newDay = 1;
+      }else{
+        newMonth=curr.month;
+      }
+    default:
+      break;
+  }
+
   DateTime newtime;
-  newtime.minutes=newMinutes;
-  newtime.hours=newHours;
-  newtime.day=newDay;
-  newtime.month=newMonth;
-  return(newtime);
+  newtime.minutes = newMinutes;
+  newtime.hours = newHours;
+  newtime.day = newDay;
+  newtime.month = newMonth;
+  return (newtime);
 }
